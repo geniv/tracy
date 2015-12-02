@@ -52,10 +52,9 @@ class BlueScreen
 
 	/**
 	 * Renders blue screen.
-	 * @param  \Exception|\Throwable  $exception
 	 * @return void
 	 */
-	public function render($exception)
+	public function render(\Throwable $exception)
 	{
 		if (Helpers::isAjax() && session_status() === PHP_SESSION_ACTIVE) {
 			ob_start(function () {});
@@ -71,10 +70,9 @@ class BlueScreen
 
 	/**
 	 * Renders blue screen to file (if file exists, it will not be overwritten).
-	 * @param  \Exception|\Throwable  $exception
 	 * @return void
 	 */
-	public function renderToFile($exception, string $file)
+	public function renderToFile(\Throwable $exception, string $file)
 	{
 		if ($handle = @fopen($file, 'x')) {
 			ob_start(); // double buffer prevents sending HTTP headers in some PHP
@@ -132,7 +130,6 @@ class BlueScreen
 				}
 				$res[] = (object) $panel;
 				continue;
-			} catch (\Exception $e) {
 			} catch (\Throwable $e) {
 			}
 			while (ob_get_level() > $obLevel) { // restore ob-level if broken

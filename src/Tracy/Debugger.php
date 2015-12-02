@@ -279,11 +279,10 @@ class Debugger
 
 	/**
 	 * Handler to catch uncaught exception.
-	 * @param  \Exception|\Throwable  $exception
 	 * @return void
 	 * @internal
 	 */
-	public static function exceptionHandler($exception, bool $exit = true)
+	public static function exceptionHandler(\Throwable $exception, bool $exit = true)
 	{
 		if (!self::$reserved && $exit) {
 			return;
@@ -303,7 +302,6 @@ class Debugger
 		if (self::$productionMode) {
 			try {
 				self::log($exception, self::EXCEPTION);
-			} catch (\Exception $e) {
 			} catch (\Throwable $e) {
 			}
 
@@ -335,8 +333,6 @@ class Debugger
 				if ($file && self::$browser) {
 					exec(self::$browser . ' ' . escapeshellarg($file));
 				}
-			} catch (\Exception $e) {
-				echo "$s\nUnable to log error: {$e->getMessage()}\n";
 			} catch (\Throwable $e) {
 				echo "$s\nUnable to log error: {$e->getMessage()}\n";
 			}
@@ -347,13 +343,9 @@ class Debugger
 			foreach (self::$onFatalError as $handler) {
 				$handler($exception);
 			}
-		} catch (\Exception $e) {
 		} catch (\Throwable $e) {
-		}
-		if ($e) {
 			try {
 				self::log($e, self::EXCEPTION);
-			} catch (\Exception $e) {
 			} catch (\Throwable $e) {
 			}
 		}
@@ -378,7 +370,7 @@ class Debugger
 
 		if ($severity === E_RECOVERABLE_ERROR || $severity === E_USER_ERROR) {
 			if (Helpers::findTrace(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), '*::__toString')) {
-				$previous = isset($context['e']) && ($context['e'] instanceof \Exception || $context['e'] instanceof \Throwable) ? $context['e'] : null;
+				$previous = isset($context['e']) && $context['e'] instanceof \Throwable ? $context['e'] : null;
 				$e = new ErrorException($message, 0, $severity, $file, $line, $previous);
 				$e->context = $context;
 				self::exceptionHandler($e);
@@ -397,7 +389,6 @@ class Debugger
 			Helpers::improveException($e);
 			try {
 				self::log($e, self::ERROR);
-			} catch (\Exception $foo) {
 			} catch (\Throwable $foo) {
 			}
 			return null;
@@ -422,7 +413,6 @@ class Debugger
 		} elseif (self::$productionMode) {
 			try {
 				self::log("$message in $file:$line", self::ERROR);
-			} catch (\Exception $foo) {
 			} catch (\Throwable $foo) {
 			}
 			return null;
@@ -578,7 +568,7 @@ class Debugger
 
 	/**
 	 * Logs message or exception.
-	 * @param  string|\Exception|\Throwable  $message
+	 * @param  string|\Throwable  $message
 	 * @return mixed
 	 */
 	public static function log($message, string $priority = ILogger::INFO)

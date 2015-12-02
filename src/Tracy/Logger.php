@@ -43,7 +43,7 @@ class Logger implements ILogger
 
 	/**
 	 * Logs message or exception to file and sends email notification.
-	 * @param  string|\Exception|\Throwable  $message
+	 * @param  string|\Throwable  $message
 	 * @param  int  $priority  one of constant ILogger::INFO, WARNING, ERROR (sends email), EXCEPTION (sends email), CRITICAL (sends email)
 	 * @return string|null logged error filename
 	 */
@@ -55,7 +55,7 @@ class Logger implements ILogger
 			throw new \RuntimeException("Logging directory '$this->directory' is not found or is not directory.");
 		}
 
-		$exceptionFile = $message instanceof \Exception || $message instanceof \Throwable
+		$exceptionFile = $message instanceof \Throwable
 			? $this->getExceptionFile($message)
 			: null;
 		$line = $this->formatLogLine($message, $exceptionFile);
@@ -82,7 +82,7 @@ class Logger implements ILogger
 	 */
 	protected function formatMessage($message): string
 	{
-		if ($message instanceof \Exception || $message instanceof \Throwable) {
+		if ($message instanceof \Throwable) {
 			while ($message) {
 				$tmp[] = ($message instanceof \ErrorException
 					? Helpers::errorTypeToString($message->getSeverity()) . ': ' . $message->getMessage()
@@ -101,7 +101,7 @@ class Logger implements ILogger
 
 
 	/**
-	 * @param  string|\Exception|\Throwable  $message
+	 * @param  string|\Throwable  $message
 	 */
 	protected function formatLogLine($message, $exceptionFile = null): string
 	{
@@ -114,10 +114,7 @@ class Logger implements ILogger
 	}
 
 
-	/**
-	 * @param  \Exception|\Throwable  $exception
-	 */
-	public function getExceptionFile($exception): string
+	public function getExceptionFile(\Throwable $exception): string
 	{
 		while ($exception) {
 			$data[] = [
@@ -139,10 +136,9 @@ class Logger implements ILogger
 
 	/**
 	 * Logs exception to the file if file doesn't exist.
-	 * @param  \Exception|\Throwable  $exception
 	 * @return string logged error filename
 	 */
-	protected function logException($exception, $file = null): string
+	protected function logException(\Throwable $exception, string $file = null): string
 	{
 		$file = $file ?: $this->getExceptionFile($exception);
 		$bs = $this->blueScreen ?: new BlueScreen;
@@ -152,7 +148,7 @@ class Logger implements ILogger
 
 
 	/**
-	 * @param  string|\Exception|\Throwable  $message
+	 * @param  string|\Throwable  $message
 	 * @return void
 	 */
 	protected function sendEmail($message)
@@ -174,7 +170,7 @@ class Logger implements ILogger
 
 	/**
 	 * Default mailer.
-	 * @param  string|\Exception|\Throwable  $message
+	 * @param  string|\Throwable  $message
 	 * @return void
 	 * @internal
 	 */
