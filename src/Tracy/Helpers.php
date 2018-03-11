@@ -103,7 +103,7 @@ class Helpers
 				$frame = [
 					'file' => $row['file'],
 					'line' => $row['line'],
-					'function' => isset($row['function']) ? $row['function'] : '*unknown*',
+					'function' => $row['function'] ?? '*unknown*',
 					'args' => [],
 				];
 				if (!empty($row['class'])) {
@@ -147,7 +147,7 @@ class Helpers
 			E_DEPRECATED => 'Deprecated',
 			E_USER_DEPRECATED => 'User Deprecated',
 		];
-		return isset($types[$type]) ? $types[$type] : 'Unknown error';
+		return $types[$type] ?? 'Unknown error';
 	}
 
 
@@ -156,7 +156,7 @@ class Helpers
 	{
 		if (isset($_SERVER['REQUEST_URI'])) {
 			return (!empty($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'], 'off') ? 'https://' : 'http://')
-				. (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '')
+				. ($_SERVER['HTTP_HOST'] ?? '')
 				. $_SERVER['REQUEST_URI'];
 		} else {
 			return 'CLI (PID: ' . getmypid() . ')'

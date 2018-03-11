@@ -293,7 +293,7 @@ class Dumper
 			. '<span class="tracy-dump-hash">#' . (int) $var . '</span>';
 		if (isset(self::$resources[$type])) {
 			$out = "<span class=\"tracy-toggle tracy-collapsed\">$out</span>\n<div class=\"tracy-collapsed\">";
-			foreach (call_user_func(self::$resources[$type], $var) as $k => $v) {
+			foreach ((self::$resources[$type])($var) as $k => $v) {
 				$out .= '<span class="tracy-dump-indent">   ' . str_repeat('|  ', $level) . '</span>'
 					. '<span class="tracy-dump-key">' . Helpers::escapeHtml($k) . '</span> => ' . self::dumpVar($v, $options, $level + 1);
 			}
@@ -381,7 +381,7 @@ class Dumper
 				$type = get_resource_type($var);
 				$obj = ['id' => self::$livePrefix . (int) $var, 'name' => $type . ' resource'];
 				if (isset(self::$resources[$type])) {
-					foreach (call_user_func(self::$resources[$type], $var) as $k => $v) {
+					foreach ((self::$resources[$type])($var) as $k => $v) {
 						$obj['items'][] = [$k, self::toJson($v, $options, $level + 1)];
 					}
 				}
@@ -461,7 +461,7 @@ class Dumper
 	{
 		foreach ($exporters as $type => $dumper) {
 			if (!$type || $obj instanceof $type) {
-				return call_user_func($dumper, $obj);
+				return $dumper($obj);
 			}
 		}
 
