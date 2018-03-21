@@ -145,7 +145,7 @@ class Debugger
 	 * @param  string  $email  administrator email; enables email sending in production mode
 	 * @return void
 	 */
-	public static function enable($mode = null, $logDirectory = null, $email = null)
+	public static function enable($mode = null, string $logDirectory = null, string $email = null)
 	{
 		if ($mode !== null || self::$productionMode === null) {
 			self::$productionMode = is_bool($mode) ? $mode : !self::detectDebugMode($mode);
@@ -245,10 +245,7 @@ class Debugger
 	}
 
 
-	/**
-	 * @return bool
-	 */
-	public static function isEnabled()
+	public static function isEnabled(): bool
 	{
 		return self::$enabled;
 	}
@@ -286,7 +283,7 @@ class Debugger
 	 * @return void
 	 * @internal
 	 */
-	public static function exceptionHandler($exception, $exit = true)
+	public static function exceptionHandler($exception, bool $exit = true)
 	{
 		if (!self::$reserved && $exit) {
 			return;
@@ -373,7 +370,7 @@ class Debugger
 	 * @throws ErrorException
 	 * @internal
 	 */
-	public static function errorHandler($severity, $message, $file, $line, $context = [])
+	public static function errorHandler($severity, $message, $file, $line, array $context = [])
 	{
 		if (self::$scream) {
 			error_reporting(E_ALL);
@@ -437,7 +434,7 @@ class Debugger
 	}
 
 
-	private static function removeOutputBuffers($errorOccurred)
+	private static function removeOutputBuffers(bool $errorOccurred)
 	{
 		while (ob_get_level() > self::$obLevel) {
 			$status = ob_get_status();
@@ -455,10 +452,7 @@ class Debugger
 	/********************* services ****************d*g**/
 
 
-	/**
-	 * @return BlueScreen
-	 */
-	public static function getBlueScreen()
+	public static function getBlueScreen(): BlueScreen
 	{
 		if (!self::$blueScreen) {
 			self::$blueScreen = new BlueScreen;
@@ -472,10 +466,7 @@ class Debugger
 	}
 
 
-	/**
-	 * @return Bar
-	 */
-	public static function getBar()
+	public static function getBar(): Bar
 	{
 		if (!self::$bar) {
 			self::$bar = new Bar;
@@ -496,10 +487,7 @@ class Debugger
 	}
 
 
-	/**
-	 * @return ILogger
-	 */
-	public static function getLogger()
+	public static function getLogger(): ILogger
 	{
 		if (!self::$logger) {
 			self::$logger = new Logger(self::$logDirectory, self::$email, self::getBlueScreen());
@@ -510,10 +498,7 @@ class Debugger
 	}
 
 
-	/**
-	 * @return ILogger
-	 */
-	public static function getFireLogger()
+	public static function getFireLogger(): ILogger
 	{
 		if (!self::$fireLogger) {
 			self::$fireLogger = new FireLogger;
@@ -532,7 +517,7 @@ class Debugger
 	 * @param  bool   $return  return output instead of printing it? (bypasses $productionMode)
 	 * @return mixed  variable itself or dump
 	 */
-	public static function dump($var, $return = false)
+	public static function dump($var, bool $return = false)
 	{
 		if ($return) {
 			ob_start(function () {});
@@ -556,10 +541,9 @@ class Debugger
 
 	/**
 	 * Starts/stops stopwatch.
-	 * @param  string  $name
 	 * @return float   elapsed seconds
 	 */
-	public static function timer($name = null)
+	public static function timer(string $name = null): float
 	{
 		static $time = [];
 		$now = microtime(true);
@@ -573,11 +557,9 @@ class Debugger
 	 * Dumps information about a variable in Tracy Debug Bar.
 	 * @tracySkipLocation
 	 * @param  mixed  $var
-	 * @param  string $title
-	 * @param  array  $options
 	 * @return mixed  variable itself
 	 */
-	public static function barDump($var, $title = null, array $options = null)
+	public static function barDump($var, string $title = null, array $options = null)
 	{
 		if (!self::$productionMode) {
 			static $panel;
@@ -599,7 +581,7 @@ class Debugger
 	 * @param  string|\Exception|\Throwable  $message
 	 * @return mixed
 	 */
-	public static function log($message, $priority = ILogger::INFO)
+	public static function log($message, string $priority = ILogger::INFO)
 	{
 		return self::getLogger()->log($message, $priority);
 	}
@@ -621,9 +603,8 @@ class Debugger
 	/**
 	 * Detects debug mode by IP address.
 	 * @param  string|array  $list  IP addresses or computer names whitelist detection
-	 * @return bool
 	 */
-	public static function detectDebugMode($list = null)
+	public static function detectDebugMode($list = null): bool
 	{
 		$addr = $_SERVER['REMOTE_ADDR'] ?? php_uname('n');
 		$secret = isset($_COOKIE[self::COOKIE_SECRET]) && is_string($_COOKIE[self::COOKIE_SECRET])

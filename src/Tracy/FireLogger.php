@@ -32,7 +32,7 @@ class FireLogger implements ILogger
 	 * @param  mixed  $message
 	 * @return bool    was successful?
 	 */
-	public function log($message, $priority = self::DEBUG)
+	public function log($message, $priority = self::DEBUG): bool
 	{
 		if (!isset($_SERVER['HTTP_X_FIRELOGGER']) || headers_sent()) {
 			return false;
@@ -115,10 +115,9 @@ class FireLogger implements ILogger
 	/**
 	 * Dump implementation for JSON.
 	 * @param  mixed  $var
-	 * @param  int  $level  recursion level
 	 * @return array|null|int|float|bool|string
 	 */
-	private function jsonDump(&$var, $level = 0)
+	private function jsonDump(&$var, int $level = 0)
 	{
 		if (is_bool($var) || $var === null || is_int($var) || is_float($var)) {
 			return $var;

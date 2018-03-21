@@ -84,9 +84,8 @@ class Dumper
 
 	/**
 	 * Dumps variable to HTML.
-	 * @return string
 	 */
-	public static function toHtml($var, array $options = null)
+	public static function toHtml($var, array $options = null): string
 	{
 		$options = (array) $options + [
 			self::DEPTH => 4,
@@ -121,9 +120,8 @@ class Dumper
 
 	/**
 	 * Dumps variable to plain text.
-	 * @return string
 	 */
-	public static function toText($var, array $options = null)
+	public static function toText($var, array $options = null): string
 	{
 		return htmlspecialchars_decode(strip_tags(self::toHtml($var, $options)), ENT_QUOTES);
 	}
@@ -131,9 +129,8 @@ class Dumper
 
 	/**
 	 * Dumps variable to x-terminal.
-	 * @return string
 	 */
-	public static function toTerminal($var, array $options = null)
+	public static function toTerminal($var, array $options = null): string
 	{
 		return htmlspecialchars_decode(strip_tags(preg_replace_callback('#<span class="tracy-dump-(\w+)">|</span>#', function ($m) {
 			return "\033[" . (isset($m[1], self::$terminalColors[$m[1]]) ? self::$terminalColors[$m[1]] : '0') . 'm';
@@ -144,11 +141,8 @@ class Dumper
 	/**
 	 * Internal toHtml() dump implementation.
 	 * @param  mixed  $var
-	 * @param  array  $options
-	 * @param  int  $level  recursion level
-	 * @return string
 	 */
-	private static function dumpVar(&$var, array $options, $level = 0)
+	private static function dumpVar(&$var, array $options, int $level = 0): string
 	{
 		if (method_exists(__CLASS__, $m = 'dump' . gettype($var))) {
 			return self::$m($var, $options, $level);
@@ -158,25 +152,25 @@ class Dumper
 	}
 
 
-	private static function dumpNull()
+	private static function dumpNull(): string
 	{
 		return "<span class=\"tracy-dump-null\">null</span>\n";
 	}
 
 
-	private static function dumpBoolean(&$var)
+	private static function dumpBoolean(&$var): string
 	{
 		return '<span class="tracy-dump-bool">' . ($var ? 'true' : 'false') . "</span>\n";
 	}
 
 
-	private static function dumpInteger(&$var)
+	private static function dumpInteger(&$var): string
 	{
 		return "<span class=\"tracy-dump-number\">$var</span>\n";
 	}
 
 
-	private static function dumpDouble(&$var)
+	private static function dumpDouble(&$var): string
 	{
 		$var = is_finite($var)
 			? ($tmp = json_encode($var)) . (strpos($tmp, '.') === false ? '.0' : '')
@@ -185,7 +179,7 @@ class Dumper
 	}
 
 
-	private static function dumpString(&$var, $options)
+	private static function dumpString(&$var, array $options): string
 	{
 		return '<span class="tracy-dump-string">"'
 			. Helpers::escapeHtml(self::encodeString($var, $options[self::TRUNCATE]))
@@ -193,7 +187,7 @@ class Dumper
 	}
 
 
-	private static function dumpArray(&$var, $options, $level)
+	private static function dumpArray(&$var, array $options, int $level): string
 	{
 		static $marker;
 		if ($marker === null) {
@@ -231,7 +225,7 @@ class Dumper
 	}
 
 
-	private static function dumpObject(&$var, $options, $level)
+	private static function dumpObject(&$var, array $options, int $level): string
 	{
 		$fields = self::exportObject($var, $options[self::OBJECT_EXPORTERS], $options[self::DEBUGINFO]);
 
@@ -286,7 +280,7 @@ class Dumper
 	}
 
 
-	private static function dumpResource(&$var, $options, $level)
+	private static function dumpResource(&$var, array $options, int $level): string
 	{
 		$type = get_resource_type($var);
 		$out = '<span class="tracy-dump-resource">' . Helpers::escapeHtml($type) . ' resource</span> '
@@ -306,7 +300,7 @@ class Dumper
 	/**
 	 * @return mixed
 	 */
-	private static function toJson(&$var, $options, $level = 0)
+	private static function toJson(&$var, array $options, int $level = 0)
 	{
 		if (is_bool($var) || $var === null || is_int($var)) {
 			return $var;
@@ -394,8 +388,7 @@ class Dumper
 	}
 
 
-	/** @return array  */
-	public static function fetchLiveData()
+	public static function fetchLiveData(): array
 	{
 		$res = [];
 		foreach (self::$liveStorage as $obj) {
@@ -410,9 +403,8 @@ class Dumper
 
 	/**
 	 * @internal
-	 * @return string UTF-8
 	 */
-	public static function encodeString($s, $maxLength = null)
+	public static function encodeString(string $s, int $maxLength = null): string
 	{
 		static $table;
 		if ($table === null) {
@@ -457,7 +449,7 @@ class Dumper
 	/**
 	 * @return array
 	 */
-	private static function exportObject($obj, array $exporters, $useDebugInfo)
+	private static function exportObject($obj, array $exporters, bool $useDebugInfo): array
 	{
 		foreach ($exporters as $type => $dumper) {
 			if (!$type || $obj instanceof $type) {
@@ -473,10 +465,7 @@ class Dumper
 	}
 
 
-	/**
-	 * @return array
-	 */
-	private static function exportClosure(\Closure $obj)
+	private static function exportClosure(\Closure $obj): array
 	{
 		$rc = new \ReflectionFunction($obj);
 		$res = [];
@@ -492,19 +481,13 @@ class Dumper
 	}
 
 
-	/**
-	 * @return array
-	 */
-	private static function exportSplFileInfo(\SplFileInfo $obj)
+	private static function exportSplFileInfo(\SplFileInfo $obj): array
 	{
 		return ['path' => $obj->getPathname()];
 	}
 
 
-	/**
-	 * @return array
-	 */
-	private static function exportSplObjectStorage(\SplObjectStorage $obj)
+	private static function exportSplObjectStorage(\SplObjectStorage $obj): array
 	{
 		$res = [];
 		foreach (clone $obj as $item) {
@@ -514,10 +497,7 @@ class Dumper
 	}
 
 
-	/**
-	 * @return array
-	 */
-	private static function exportPhpIncompleteClass(\__PHP_Incomplete_Class $obj)
+	private static function exportPhpIncompleteClass(\__PHP_Incomplete_Class $obj): array
 	{
 		$info = ['className' => null, 'private' => [], 'protected' => [], 'public' => []];
 		foreach ((array) $obj as $name => $value) {
@@ -539,7 +519,7 @@ class Dumper
 	 * Finds the location where dump was called.
 	 * @return array|null [file, line, code]
 	 */
-	private static function findLocation()
+	private static function findLocation(): array
 	{
 		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $item) {
 			if (isset($item['class']) && $item['class'] === __CLASS__) {
@@ -572,10 +552,7 @@ class Dumper
 	}
 
 
-	/**
-	 * @return bool
-	 */
-	private static function detectColors()
+	private static function detectColors(): bool
 	{
 		return self::$terminalColors &&
 			(getenv('ConEmuANSI') === 'ON'

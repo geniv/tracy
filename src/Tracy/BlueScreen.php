@@ -39,10 +39,9 @@ class BlueScreen
 
 	/**
 	 * Add custom panel.
-	 * @param  callable  $panel
 	 * @return static
 	 */
-	public function addPanel($panel)
+	public function addPanel(callable $panel): self
 	{
 		if (!in_array($panel, $this->panels, true)) {
 			$this->panels[] = $panel;
@@ -73,10 +72,9 @@ class BlueScreen
 	/**
 	 * Renders blue screen to file (if file exists, it will not be overwritten).
 	 * @param  \Exception|\Throwable  $exception
-	 * @param  string  $file file path
 	 * @return void
 	 */
-	public function renderToFile($exception, $file)
+	public function renderToFile($exception, string $file)
 	{
 		if ($handle = @fopen($file, 'x')) {
 			ob_start(); // double buffer prevents sending HTTP headers in some PHP
@@ -89,7 +87,7 @@ class BlueScreen
 	}
 
 
-	private function renderTemplate($exception, $template)
+	private function renderTemplate(\Throwable $exception, string $template)
 	{
 		$info = array_filter($this->info);
 		$source = Helpers::getSource();
@@ -122,7 +120,7 @@ class BlueScreen
 	/**
 	 * @return \stdClass[]
 	 */
-	private function renderPanels($ex)
+	private function renderPanels($ex): array
 	{
 		$obLevel = ob_get_level();
 		$res = [];
@@ -152,12 +150,9 @@ class BlueScreen
 
 	/**
 	 * Returns syntax highlighted source code.
-	 * @param  string  $file
-	 * @param  int  $line
-	 * @param  int  $lines
 	 * @return string|null
 	 */
-	public static function highlightFile($file, $line, $lines = 15, array $vars = null)
+	public static function highlightFile(string $file, int $line, int $lines = 15, array $vars = null)
 	{
 		$source = @file_get_contents($file); // @ file may not exist
 		if ($source) {
@@ -172,12 +167,8 @@ class BlueScreen
 
 	/**
 	 * Returns syntax highlighted source code.
-	 * @param  string  $source
-	 * @param  int  $line
-	 * @param  int  $lines
-	 * @return string
 	 */
-	public static function highlightPhp($source, $line, $lines = 15, array $vars = null)
+	public static function highlightPhp(string $source, int $line, int $lines = 15, array $vars = null): string
 	{
 		if (function_exists('ini_set')) {
 			ini_set('highlight.comment', '#998; font-style: italic');
@@ -210,9 +201,8 @@ class BlueScreen
 
 	/**
 	 * Returns highlighted line in HTML code.
-	 * @return string
 	 */
-	public static function highlightLine($html, $line, $lines = 15)
+	public static function highlightLine(string $html, int $line, int $lines = 15): string
 	{
 		$source = explode("\n", "\n" . str_replace("\r\n", "\n", $html));
 		$out = '';
@@ -254,10 +244,8 @@ class BlueScreen
 
 	/**
 	 * Should a file be collapsed in stack trace?
-	 * @param  string  $file
-	 * @return bool
 	 */
-	public function isCollapsed($file)
+	public function isCollapsed(string $file): bool
 	{
 		$file = strtr($file, '\\', '/') . '/';
 		foreach ($this->collapsePaths as $path) {

@@ -32,7 +32,7 @@ class Logger implements ILogger
 	private $blueScreen;
 
 
-	public function __construct($directory, $email = null, BlueScreen $blueScreen = null)
+	public function __construct(string $directory = null, $email = null, BlueScreen $blueScreen = null)
 	{
 		$this->directory = $directory;
 		$this->email = $email;
@@ -79,9 +79,8 @@ class Logger implements ILogger
 
 	/**
 	 * @param  mixed  $message
-	 * @return string
 	 */
-	protected function formatMessage($message)
+	protected function formatMessage($message): string
 	{
 		if ($message instanceof \Exception || $message instanceof \Throwable) {
 			while ($message) {
@@ -103,9 +102,8 @@ class Logger implements ILogger
 
 	/**
 	 * @param  string|\Exception|\Throwable  $message
-	 * @return string
 	 */
-	protected function formatLogLine($message, $exceptionFile = null)
+	protected function formatLogLine($message, $exceptionFile = null): string
 	{
 		return implode(' ', [
 			@date('[Y-m-d H-i-s]'), // @ timezone may not be set
@@ -118,9 +116,8 @@ class Logger implements ILogger
 
 	/**
 	 * @param  \Exception|\Throwable  $exception
-	 * @return string
 	 */
-	public function getExceptionFile($exception)
+	public function getExceptionFile($exception): string
 	{
 		while ($exception) {
 			$data[] = [
@@ -145,7 +142,7 @@ class Logger implements ILogger
 	 * @param  \Exception|\Throwable  $exception
 	 * @return string logged error filename
 	 */
-	protected function logException($exception, $file = null)
+	protected function logException($exception, $file = null): string
 	{
 		$file = $file ?: $this->getExceptionFile($exception);
 		$bs = $this->blueScreen ?: new BlueScreen;
@@ -178,11 +175,10 @@ class Logger implements ILogger
 	/**
 	 * Default mailer.
 	 * @param  string|\Exception|\Throwable  $message
-	 * @param  string  $email
 	 * @return void
 	 * @internal
 	 */
-	public function defaultMailer($message, $email)
+	public function defaultMailer($message, string $email)
 	{
 		$host = preg_replace('#[^\w.-]+#', '', $_SERVER['HTTP_HOST'] ?? php_uname('n'));
 		$parts = str_replace(

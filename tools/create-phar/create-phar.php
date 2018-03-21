@@ -7,7 +7,7 @@ if (!class_exists('Phar') || ini_get('phar.readonly')) {
 }
 
 
-function compressJs($s)
+function compressJs(string $s): string
 {
 	if (function_exists('curl_init')) {
 		$curl = curl_init('https://closure-compiler.appspot.com/compile');
@@ -21,7 +21,7 @@ function compressJs($s)
 }
 
 
-function compressCss($s)
+function compressCss(string $s): string
 {
 	$s = preg_replace('#/\*.*?\*/#s', '', $s); // remove comments
 	$s = preg_replace('#[ \t\r\n]+#', ' ', $s); // compress space, ignore hard space

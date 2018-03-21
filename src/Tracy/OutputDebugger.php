@@ -38,7 +38,7 @@ class OutputDebugger
 
 
 	/** @internal */
-	public function handler($s, $phase)
+	public function handler(string $s, int $phase)
 	{
 		$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		if (isset($trace[0]['file'], $trace[0]['line'])) {
@@ -57,7 +57,7 @@ class OutputDebugger
 	}
 
 
-	private function renderHtml()
+	private function renderHtml(): string
 	{
 		$res = '<style>code, pre {white-space:nowrap} a {text-decoration:none} pre {color:gray;display:inline} big {color:red}</style><code>';
 		foreach ($this->list as $item) {

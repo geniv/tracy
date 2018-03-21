@@ -16,9 +16,8 @@ class Helpers
 
 	/**
 	 * Returns HTML link to editor.
-	 * @return string
 	 */
-	public static function editorLink($file, $line = null)
+	public static function editorLink(string $file, $line = null): string
 	{
 		$file = strtr($origFile = $file, Debugger::$editorMapping);
 		if ($editor = self::editorUri($origFile, $line)) {
@@ -44,16 +43,17 @@ class Helpers
 	 * Returns link to editor.
 	 * @return string|null
 	 */
-	public static function editorUri($file, $line = null)
+	public static function editorUri(string $file, $line = null)
 	{
 		if (Debugger::$editor && $file && is_file($file)) {
 			$file = strtr($file, Debugger::$editorMapping);
 			return strtr(Debugger::$editor, ['%file' => rawurlencode($file), '%line' => $line ? (int) $line : 1]);
 		}
+		return null;
 	}
 
 
-	public static function formatHtml($mask)
+	public static function formatHtml(string $mask): string
 	{
 		$args = func_get_args();
 		return preg_replace_callback('#%#', function () use (&$args, &$count) {
@@ -62,13 +62,13 @@ class Helpers
 	}
 
 
-	public static function escapeHtml($s)
+	public static function escapeHtml($s): string
 	{
 		return htmlspecialchars((string) $s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 	}
 
 
-	public static function findTrace(array $trace, $method, &$index = null)
+	public static function findTrace(array $trace, string $method, int &$index = null)
 	{
 		$m = explode('::', $method);
 		foreach ($trace as $i => $item) {
@@ -85,17 +85,14 @@ class Helpers
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public static function getClass($obj)
+	public static function getClass($obj): string
 	{
 		return explode("\x00", get_class($obj))[0];
 	}
 
 
 	/** @internal */
-	public static function fixStack($exception)
+	public static function fixStack(\Throwable $exception): \Throwable
 	{
 		if (function_exists('xdebug_get_function_stack')) {
 			$stack = [];
@@ -121,14 +118,14 @@ class Helpers
 
 
 	/** @internal */
-	public static function fixEncoding($s)
+	public static function fixEncoding(string $s): string
 	{
 		return htmlspecialchars_decode(htmlspecialchars($s, ENT_NOQUOTES | ENT_IGNORE, 'UTF-8'), ENT_NOQUOTES);
 	}
 
 
 	/** @internal */
-	public static function errorTypeToString($type)
+	public static function errorTypeToString(int $type): string
 	{
 		$types = [
 			E_ERROR => 'Fatal Error',
@@ -152,7 +149,7 @@ class Helpers
 
 
 	/** @internal */
-	public static function getSource()
+	public static function getSource(): string
 	{
 		if (isset($_SERVER['REQUEST_URI'])) {
 			return (!empty($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'], 'off') ? 'https://' : 'http://')
@@ -166,7 +163,7 @@ class Helpers
 
 
 	/** @internal */
-	public static function improveException($e)
+	public static function improveException(\Throwable $e)
 	{
 		$message = $e->getMessage();
 		if (!$e instanceof \Error && !$e instanceof \ErrorException) {
@@ -226,7 +223,7 @@ class Helpers
 
 
 	/** @internal */
-	public static function isHtmlMode()
+	public static function isHtmlMode(): bool
 	{
 		return empty($_SERVER['HTTP_X_REQUESTED_WITH']) && empty($_SERVER['HTTP_X_TRACY_AJAX'])
 			&& PHP_SAPI !== 'cli'
@@ -235,7 +232,7 @@ class Helpers
 
 
 	/** @internal */
-	public static function isAjax()
+	public static function isAjax(): bool
 	{
 		return isset($_SERVER['HTTP_X_TRACY_AJAX']) && preg_match('#^\w{10}\z#', $_SERVER['HTTP_X_TRACY_AJAX']);
 	}
